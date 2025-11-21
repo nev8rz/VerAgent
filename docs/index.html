@@ -20,6 +20,12 @@
             loadSidebar: true,
             subMaxLevel: 3, // Support for multi-level headers in sidebar
             search: 'auto',
+            pagination: {
+                previousText: '上一章',
+                nextText: '下一章',
+                crossChapter: true,
+                crossChapterText: true,
+            },
             plugins: [
                 function (hook, vm) {
                     // Plugin to wrap code blocks and add copy button
@@ -245,6 +251,8 @@
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
+    <!-- Pagination Plugin -->
+    <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
 </body>
 
 </html>

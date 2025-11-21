@@ -129,12 +129,6 @@
     transition: all 0.2s;
 }
 
-.sidebar .search input:focus {
-    /* When focused, we transform it into the modal (via the .search class usually getting a class, but Docsify doesn't add one easily.
-       So we will use a different approach: The Results Panel IS the modal.
-    */
-}
-
 /* The Results Panel - This will be our Modal */
 .sidebar .search .results-panel {
     display: none;
@@ -155,9 +149,6 @@
     border: 1px solid #e1e4e8;
 }
 
-/* Show results panel when it has content (Docsify adds 'show' class usually)
-   Actually Docsify toggles 'show' on .results-panel.
-*/
 .sidebar .search .results-panel.show {
     display: block;
 }
@@ -177,25 +168,6 @@
 .search-backdrop.show {
     display: block;
 }
-
-/* Adjust search input when modal is active?
-   Docsify doesn't easily let us move the input into the modal without JS.
-   Let's try to style the input to be fixed when focused?
-   That might be tricky because it's inside the sidebar.
-*/
-
-/* ALTERNATIVE: We'll use JS to handle the modal state and move the input or clone it.
-   For now, let's style the input to look nice in the sidebar, and when clicked,
-   we can maybe expand it or just rely on the results popping up.
-   
-   User asked: "Click button -> pop up box to input -> output also in box"
-*/
-
-/* We need a dedicated modal container that we might inject via JS, or style the existing one heavily.
-   Let's assume we will inject a modal structure in JS or modify the existing one.
-   
-   Let's add styles for a custom modal we will build in JS.
-*/
 
 .custom-search-modal {
     position: fixed;
