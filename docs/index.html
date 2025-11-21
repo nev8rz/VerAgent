@@ -96,24 +96,48 @@
                         // Create Toggle Button
                         var toggleBtn = document.createElement('button');
                         toggleBtn.id = 'giscus-toggle-btn';
-                        toggleBtn.textContent = 'Show Comments';
-                        toggleBtn.style.marginTop = '2rem';
-                        toggleBtn.style.padding = '10px 20px';
-                        toggleBtn.style.background = 'var(--code-bg)';
+                        toggleBtn.innerHTML = '<span>💬</span> Show Comments';
+                        toggleBtn.style.marginTop = '2.5rem';
+                        toggleBtn.style.marginBottom = '1.5rem';
+                        toggleBtn.style.padding = '12px 24px';
+                        toggleBtn.style.background = 'white';
                         toggleBtn.style.border = '1px solid #e1e4e8';
-                        toggleBtn.style.borderRadius = '6px';
+                        toggleBtn.style.borderRadius = '50px'; // Pill shape
                         toggleBtn.style.cursor = 'pointer';
-                        toggleBtn.style.display = 'block';
-                        toggleBtn.style.width = '100%';
-                        toggleBtn.style.textAlign = 'center';
-                        toggleBtn.style.fontWeight = 'bold';
-                        toggleBtn.style.color = '#586069';
+                        toggleBtn.style.display = 'flex';
+                        toggleBtn.style.alignItems = 'center';
+                        toggleBtn.style.justifyContent = 'center';
+                        toggleBtn.style.gap = '8px';
+                        toggleBtn.style.width = 'fit-content';
+                        toggleBtn.style.marginLeft = 'auto';
+                        toggleBtn.style.marginRight = 'auto';
+                        toggleBtn.style.fontSize = '15px';
+                        toggleBtn.style.fontWeight = '600';
+                        toggleBtn.style.color = '#24292e';
+                        toggleBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+                        toggleBtn.style.transition = 'all 0.2s ease';
+
+                        // Hover effect
+                        toggleBtn.addEventListener('mouseenter', function () {
+                            toggleBtn.style.transform = 'translateY(-1px)';
+                            toggleBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
+                            toggleBtn.style.borderColor = '#d1d5da';
+                            toggleBtn.style.color = 'var(--theme-color, #42b983)';
+                        });
+                        toggleBtn.addEventListener('mouseleave', function () {
+                            toggleBtn.style.transform = 'translateY(0)';
+                            toggleBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+                            toggleBtn.style.borderColor = '#e1e4e8';
+                            toggleBtn.style.color = '#24292e';
+                        });
 
                         // Create Container (Hidden by default)
                         var giscusContainer = document.createElement('div');
                         giscusContainer.id = 'giscus-container';
-                        giscusContainer.style.marginTop = '1rem';
+                        giscusContainer.style.marginTop = '2rem';
                         giscusContainer.style.display = 'none'; // Hidden initially
+                        giscusContainer.style.opacity = '0';
+                        giscusContainer.style.transition = 'opacity 0.3s ease';
 
                         var script = document.createElement('script');
                         script.src = "https://giscus.app/client.js";
@@ -137,10 +161,17 @@
                         toggleBtn.addEventListener('click', function () {
                             if (giscusContainer.style.display === 'none') {
                                 giscusContainer.style.display = 'block';
-                                toggleBtn.textContent = 'Hide Comments';
+                                // Small delay to allow display:block to apply before opacity transition
+                                setTimeout(function () {
+                                    giscusContainer.style.opacity = '1';
+                                }, 10);
+                                toggleBtn.innerHTML = '<span>✕</span> Hide Comments';
                             } else {
-                                giscusContainer.style.display = 'none';
-                                toggleBtn.textContent = 'Show Comments';
+                                giscusContainer.style.opacity = '0';
+                                setTimeout(function () {
+                                    giscusContainer.style.display = 'none';
+                                }, 300); // Wait for transition
+                                toggleBtn.innerHTML = '<span>💬</span> Show Comments';
                             }
                         });
 
