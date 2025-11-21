@@ -1,0 +1,318 @@
+/* Xcode-style Code Blocks */
+:root {
+    --code-bg: #f6f8fa;
+    /* Light gray bg (GitHub style) */
+    --code-header-height: 28px;
+    --mac-red: #ff5f56;
+    --mac-yellow: #ffbd2e;
+    --mac-green: #27c93f;
+}
+
+/* Wrapper for the code block to handle the header */
+.code-block-wrapper {
+    background: var(--code-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    /* Softer shadow for light mode */
+    margin: 1.5em 0;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #e1e4e8;
+    /* Light border */
+}
+
+/* The Mac-style window header */
+.code-block-header {
+    background: #e1e4e8;
+    /* Slightly darker header for light mode */
+    height: var(--code-header-height);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    position: relative;
+}
+
+/* The dots container */
+.code-window-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.code-window-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.code-window-dot.red {
+    background-color: var(--mac-red);
+}
+
+.code-window-dot.yellow {
+    background-color: var(--mac-yellow);
+}
+
+.code-window-dot.green {
+    background-color: var(--mac-green);
+}
+
+/* Override Docsify's default pre/code styling */
+.markdown-section pre {
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 1em !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+.markdown-section pre>code {
+    background: transparent !important;
+    color: #24292e !important;
+    /* Dark text for light mode */
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace !important;
+    font-size: 14px !important;
+    padding: 0 !important;
+}
+
+/* Copy Button */
+.copy-btn {
+    position: absolute;
+    top: 4px;
+    /* Center vertically in header roughly, or adjust */
+    right: 10px;
+    background: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #586069;
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    height: 20px;
+    line-height: 16px;
+}
+
+.copy-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #24292e;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.copy-btn.copied {
+    background: rgba(39, 201, 63, 0.1);
+    color: var(--mac-green);
+    border-color: var(--mac-green);
+}
+
+/* Modal Search Styling */
+.sidebar .search {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+/* Hide the default input but keep it clickable or replace it with a fake button */
+.sidebar .search .input-wrap {
+    margin-top: 5px;
+}
+
+.sidebar .search input {
+    /* We want to make the sidebar input look like a trigger button */
+    cursor: pointer;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    padding: 6px 12px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.sidebar .search input:focus {
+    /* When focused, we transform it into the modal (via the .search class usually getting a class, but Docsify doesn't add one easily.
+       So we will use a different approach: The Results Panel IS the modal.
+    */
+}
+
+/* The Results Panel - This will be our Modal */
+.sidebar .search .results-panel {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    max-width: 90vw;
+    max-height: 70vh;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    z-index: 9999;
+    padding: 20px;
+    overflow-y: auto;
+    border: 1px solid #e1e4e8;
+}
+
+/* Show results panel when it has content (Docsify adds 'show' class usually)
+   Actually Docsify toggles 'show' on .results-panel.
+*/
+.sidebar .search .results-panel.show {
+    display: block;
+}
+
+/* Backdrop for modal */
+.search-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 9998;
+    display: none;
+}
+
+.search-backdrop.show {
+    display: block;
+}
+
+/* Adjust search input when modal is active?
+   Docsify doesn't easily let us move the input into the modal without JS.
+   Let's try to style the input to be fixed when focused?
+   That might be tricky because it's inside the sidebar.
+*/
+
+/* ALTERNATIVE: We'll use JS to handle the modal state and move the input or clone it.
+   For now, let's style the input to look nice in the sidebar, and when clicked,
+   we can maybe expand it or just rely on the results popping up.
+   
+   User asked: "Click button -> pop up box to input -> output also in box"
+*/
+
+/* We need a dedicated modal container that we might inject via JS, or style the existing one heavily.
+   Let's assume we will inject a modal structure in JS or modify the existing one.
+   
+   Let's add styles for a custom modal we will build in JS.
+*/
+
+.custom-search-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 100px;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.custom-search-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.custom-search-box {
+    width: 600px;
+    max-width: 90%;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-search-input-wrapper {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.custom-search-input {
+    width: 100%;
+    font-size: 18px;
+    border: none;
+    outline: none;
+    padding: 8px;
+    color: #24292e;
+}
+
+.custom-search-results {
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.custom-search-results .results-panel {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    display: block;
+    padding: 0;
+}
+
+/* Spacing for search results */
+.custom-search-results .matching-post {
+    border-bottom: 1px solid #eee;
+    padding: 15px 20px;
+    transition: background 0.2s;
+}
+
+.custom-search-results .matching-post:last-child {
+    border-bottom: none;
+}
+
+.custom-search-results .matching-post:hover {
+    background: #f6f8fa;
+}
+
+.custom-search-results .matching-post h2 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 18px;
+    color: #0366d6;
+}
+
+.custom-search-results .matching-post p {
+    margin: 0;
+    font-size: 14px;
+    color: #586069;
+    line-height: 1.5;
+}
+
+/* Hide default sidebar search */
+.sidebar .search {
+    display: none !important;
+}
+
+/* Custom trigger button in sidebar */
+.sidebar-search-trigger {
+    margin: 20px;
+    padding: 8px 12px;
+    background: #f6f8fa;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    color: #586069;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.sidebar-search-trigger:hover {
+    background: #fff;
+    border-color: #ccc;
+    color: #24292e;
+}

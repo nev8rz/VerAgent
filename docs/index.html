@@ -8,6 +8,7 @@
     <meta name="description" content="VerAgent Documentation">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
@@ -19,6 +20,220 @@
             loadSidebar: true,
             subMaxLevel: 3, // Support for multi-level headers in sidebar
             search: 'auto',
+            plugins: [
+                function (hook, vm) {
+                    // Plugin to wrap code blocks and add copy button
+                    hook.doneEach(function () {
+                        var pres = document.querySelectorAll('pre');
+                        pres.forEach(function (pre) {
+                            // Check if already wrapped to avoid double wrapping on re-renders
+                            if (pre.parentNode.classList.contains('code-block-wrapper')) {
+                                return;
+                            }
+
+                            // Create wrapper
+                            var wrapper = document.createElement('div');
+                            wrapper.className = 'code-block-wrapper';
+
+                            // Create header
+                            var header = document.createElement('div');
+                            header.className = 'code-block-header';
+
+                            // Create controls (dots)
+                            var controls = document.createElement('div');
+                            controls.className = 'code-window-controls';
+                            var red = document.createElement('span'); red.className = 'code-window-dot red';
+                            var yellow = document.createElement('span'); yellow.className = 'code-window-dot yellow';
+                            var green = document.createElement('span'); green.className = 'code-window-dot green';
+                            controls.appendChild(red);
+                            controls.appendChild(yellow);
+                            controls.appendChild(green);
+
+                            // Create copy button
+                            var copyBtn = document.createElement('button');
+                            copyBtn.className = 'copy-btn';
+                            copyBtn.textContent = 'Copy';
+                            copyBtn.addEventListener('click', function () {
+                                var code = pre.querySelector('code').innerText;
+                                navigator.clipboard.writeText(code).then(function () {
+                                    copyBtn.textContent = 'Copied!';
+                                    copyBtn.classList.add('copied');
+                                    setTimeout(function () {
+                                        copyBtn.textContent = 'Copy';
+                                        copyBtn.classList.remove('copied');
+                                    }, 2000);
+                                });
+                            });
+
+                            // Assemble header
+                            header.appendChild(controls);
+                            header.appendChild(copyBtn);
+
+                            // Insert wrapper before pre, then move pre inside
+                            pre.parentNode.insertBefore(wrapper, pre);
+                            wrapper.appendChild(header);
+                            wrapper.appendChild(pre);
+                        });
+                    });
+
+                    // Giscus comment system
+                    hook.doneEach(function () {
+                        // Remove existing container if any to prevent duplicates
+                        var existing = document.getElementById('giscus-container');
+                        if (existing) existing.remove();
+                        var existingBtn = document.getElementById('giscus-toggle-btn');
+                        if (existingBtn) existingBtn.remove();
+
+                        var main = document.getElementById('main');
+                        if (!main) return;
+
+                        // Create Toggle Button
+                        var toggleBtn = document.createElement('button');
+                        toggleBtn.id = 'giscus-toggle-btn';
+                        toggleBtn.textContent = 'Show Comments';
+                        toggleBtn.style.marginTop = '2rem';
+                        toggleBtn.style.padding = '10px 20px';
+                        toggleBtn.style.background = 'var(--code-bg)';
+                        toggleBtn.style.border = '1px solid #e1e4e8';
+                        toggleBtn.style.borderRadius = '6px';
+                        toggleBtn.style.cursor = 'pointer';
+                        toggleBtn.style.display = 'block';
+                        toggleBtn.style.width = '100%';
+                        toggleBtn.style.textAlign = 'center';
+                        toggleBtn.style.fontWeight = 'bold';
+                        toggleBtn.style.color = '#586069';
+
+                        // Create Container (Hidden by default)
+                        var giscusContainer = document.createElement('div');
+                        giscusContainer.id = 'giscus-container';
+                        giscusContainer.style.marginTop = '1rem';
+                        giscusContainer.style.display = 'none'; // Hidden initially
+
+                        var script = document.createElement('script');
+                        script.src = "https://giscus.app/client.js";
+                        script.setAttribute("data-repo", "nev8rz/VerAgent");
+                        script.setAttribute("data-repo-id", "R_kgDOQaS1wg");
+                        script.setAttribute("data-category", "General");
+                        script.setAttribute("data-category-id", "DIC_kwDOQaS1ws4CyDMY");
+                        script.setAttribute("data-mapping", "title");
+                        script.setAttribute("data-strict", "0");
+                        script.setAttribute("data-reactions-enabled", "1");
+                        script.setAttribute("data-emit-metadata", "0");
+                        script.setAttribute("data-input-position", "bottom");
+                        script.setAttribute("data-theme", "preferred_color_scheme");
+                        script.setAttribute("data-lang", "zh-CN");
+                        script.setAttribute("crossorigin", "anonymous");
+                        script.async = true;
+
+                        giscusContainer.appendChild(script);
+
+                        // Toggle Logic
+                        toggleBtn.addEventListener('click', function () {
+                            if (giscusContainer.style.display === 'none') {
+                                giscusContainer.style.display = 'block';
+                                toggleBtn.textContent = 'Hide Comments';
+                            } else {
+                                giscusContainer.style.display = 'none';
+                                toggleBtn.textContent = 'Show Comments';
+                            }
+                        });
+
+                        main.appendChild(toggleBtn);
+                        main.appendChild(giscusContainer);
+                    });
+
+                    // Modal Search Logic
+                    hook.doneEach(function () {
+                        // 1. Hide default search if not already hidden by CSS (we did display:none in CSS)
+                        // 2. Create Trigger Button in Sidebar
+                        var sidebar = document.querySelector('.sidebar');
+                        var existingTrigger = document.querySelector('.sidebar-search-trigger');
+
+                        if (sidebar && !existingTrigger) {
+                            var trigger = document.createElement('div');
+                            trigger.className = 'sidebar-search-trigger';
+                            trigger.innerHTML = '<span>🔍</span> <span>Search...</span> <span style="margin-left:auto; font-size:12px; opacity:0.6;">⌘K</span>';
+
+                            // Insert at top of sidebar
+                            sidebar.insertBefore(trigger, sidebar.firstChild);
+
+                            // Create Modal Structure
+                            var modal = document.createElement('div');
+                            modal.className = 'custom-search-modal';
+                            modal.innerHTML = `
+                                <div class="custom-search-box">
+                                    <div class="custom-search-input-wrapper">
+                                        <span style="margin-right: 10px; font-size: 20px;">🔍</span>
+                                        <input type="text" class="custom-search-input" placeholder="Search documentation..." />
+                                    </div>
+                                    <div class="custom-search-results"></div>
+                                </div>
+                            `;
+                            document.body.appendChild(modal);
+
+                            var input = modal.querySelector('.custom-search-input');
+                            var resultsContainer = modal.querySelector('.custom-search-results');
+
+                            // Sync with Docsify's internal search
+                            // Docsify renders results in .sidebar .search .results-panel
+                            // We need to trigger the real input and copy results
+
+                            var realSearchInput = document.querySelector('.sidebar .search input');
+                            var realResultsPanel = document.querySelector('.sidebar .search .results-panel');
+
+                            // Open Modal
+                            trigger.addEventListener('click', function () {
+                                modal.classList.add('open');
+                                input.focus();
+                            });
+
+                            // Close Modal on click outside
+                            modal.addEventListener('click', function (e) {
+                                if (e.target === modal) {
+                                    modal.classList.remove('open');
+                                }
+                            });
+
+                            // Close on Escape
+                            document.addEventListener('keydown', function (e) {
+                                if (e.key === 'Escape' && modal.classList.contains('open')) {
+                                    modal.classList.remove('open');
+                                }
+                                if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                                    e.preventDefault();
+                                    modal.classList.add('open');
+                                    input.focus();
+                                }
+                            });
+
+                            // Input Sync
+                            input.addEventListener('input', function (e) {
+                                if (realSearchInput) {
+                                    realSearchInput.value = e.target.value;
+                                    // Dispatch input event to trigger Docsify search
+                                    var event = new Event('input', { bubbles: true });
+                                    realSearchInput.dispatchEvent(event);
+                                }
+                            });
+
+                            // Observe changes in real results panel and copy them
+                            if (realResultsPanel) {
+                                var observer = new MutationObserver(function (mutations) {
+                                    resultsContainer.innerHTML = realResultsPanel.innerHTML;
+                                    // Fix links to close modal when clicked
+                                    var links = resultsContainer.querySelectorAll('a');
+                                    links.forEach(function (link) {
+                                        link.addEventListener('click', function () {
+                                            modal.classList.remove('open');
+                                        });
+                                    });
+                                });
+                                observer.observe(realResultsPanel, { childList: true, subtree: true, attributes: true });
+                            }
+                        }
+                    });
+                }
+            ]
         }
     </script>
     <!-- Docsify v4 -->
@@ -26,14 +241,10 @@
     <!-- Search Plugin -->
     <script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/search.min.js"></script>
 
-    <!-- Giscus Comments -->
-    <div id="giscus-container" style="margin: 2rem auto; max-width: 800px; padding: 0 1rem;">
-        <script src="https://giscus.app/client.js" data-repo="nev8rz/VerAgent" data-repo-id="R_kgDOQaS1wg"
-            data-category="Q&A" data-category-id="DIC_kwDOQaS1ws4CyDMZ" data-mapping="title" data-strict="0"
-            data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom"
-            data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous" async>
-            </script>
-    </div>
+    <!-- PrismJS Syntax Highlighting -->
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
 </body>
 
 </html>
